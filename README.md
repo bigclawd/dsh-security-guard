@@ -22,6 +22,7 @@
 | 👁️ **Runtime watch** | Intercepts dangerous tool calls, prompt steps and file operations before they happen |
 | 📊 **Verdicts** | Every finding classified `block \| warn \| clean`, written to JSON or human-readable reports |
 | 🧩 **Extensible rules** | Plain auditable JSON rules, overridable per id, no opaque signatures |
+| 🪝 **Install hook** | Auto-scans every freshly installed plugin (profile-manifest watcher) |
 | 🖥️ **Surfaces** | `/scan` command, `plugin_scan` tool, live web panel, user-managed allowlist |
 
 ## 🎯 Threat model
@@ -87,8 +88,20 @@ ctx.plugin(Guard, {
   runtime: { enabled: true, blockOnSeverity: ['block'], maxFindingsPerScan: 200 },
   allowlist: { file: 'data/guard-allowlist.json' },
   web: { enabled: true, path: '/scan' },
+  installHook: { enabled: true, intervalMs: 5000 },  // auto-scan newly installed plugins
 })
 ```
+
+### Install hook
+
+The host emits no "package installed" event (`dsh plugin add` is a separate CLI
+process), so the guard watches the profile manifest
+(`$DSH_HOME/profiles/<name>/package.json` — the only file the CLI rewrites
+after a successful install). Every package added to its dependencies is
+statically scanned under `node_modules`; the report is recorded as a runtime
+event (`source: install`), emitted as a `guard/install-scan` event, and
+appended to `guard-install-scans.jsonl` in the profile directory. Disable with
+`installHook: { enabled: false }`.
 
 ### Static scan
 

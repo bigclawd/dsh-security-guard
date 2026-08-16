@@ -64,7 +64,7 @@ export interface RuntimeEvent {
   /** Unix epoch milliseconds. */
   readonly time: number
   /** The watcher that produced the event. */
-  readonly source: 'pre-step' | 'tool-call' | 'tool-result' | 'token' | 'command' | 'web'
+  readonly source: 'pre-step' | 'tool-call' | 'tool-result' | 'token' | 'command' | 'web' | 'install'
   readonly severity: ScanSeverity
   /** Human-readable description. */
   readonly message: string
@@ -274,6 +274,13 @@ export interface GuardConfig {
   readonly denyDangerousToolCalls: boolean
   /** Serve the web panel (requires the webServer service to be present). */
   readonly webPanel: boolean
+  /** Auto-scan freshly installed plugins: watches the profile manifest. */
+  readonly installHook: {
+    /** Enable the profile-manifest watcher. */
+    readonly enabled: boolean
+    /** Poll interval for the profile manifest. */
+    readonly intervalMs: number
+  }
 }
 
 /** The runtime state shared by the command, tool, web panel, and watchers. */

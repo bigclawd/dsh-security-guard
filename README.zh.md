@@ -22,6 +22,7 @@
 | 👁️ **运行时监控** | 在危险工具调用、提示词步骤和文件操作发生之前将其拦截 |
 | 📊 **判定分级** | 每个发现项归类为 `block \| warn \| clean`，写入 JSON 或人类可读报告 |
 | 🧩 **可扩展规则** | 纯可审计 JSON 规则，按 id 可覆盖，无黑盒签名机制 |
+| 🪝 **安装钩子** | 自动扫描每个新安装的插件（监听 profile 清单变化） |
 | 🖥️ **交互界面** | `/scan` 命令、`plugin_scan` 工具、实时 Web 面板、用户可管理的白名单 |
 
 ## 🎯 威胁模型
@@ -84,8 +85,18 @@ ctx.plugin(Guard, {
   runtime: { enabled: true, blockOnSeverity: ['block'], maxFindingsPerScan: 200 },
   allowlist: { file: 'data/guard-allowlist.json' },
   web: { enabled: true, path: '/scan' },
+  installHook: { enabled: true, intervalMs: 5000 },  // 自动扫描新安装的插件
 })
 ```
+
+### 安装钩子
+
+宿主没有"插件已安装"事件（`dsh plugin add` 是独立 CLI 进程），所以守卫监听
+profile 清单（`$DSH_HOME/profiles/<name>/package.json`——CLI 在安装成功后
+唯一会改写的文件）。每次新增的依赖包都会在 `node_modules` 下被静态扫描；
+报告记为运行时事件（`source: install`）、以 `guard/install-scan` 事件发出，
+并追加到 profile 目录的 `guard-install-scans.jsonl`。用
+`installHook: { enabled: false }` 关闭。
 
 ### 静态扫描
 

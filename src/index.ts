@@ -19,17 +19,30 @@
 
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
-import { existsSync, statSync } from 'node:fs'
+import { appendFileSync, existsSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import type { GuardConfig, GuardStateSnapshot, RuntimeEvent, ScanReport, ScanSeverity } from './types.ts'
 import { compileRules, loadBundledAllowlist, loadBundledRules, loadRulesDir, mergeRules } from './rules.ts'
 import { scanTarget, type ScanOptions } from './static/scanner.ts'
 import { Whitelist } from './whitelist.ts'
 import { GuardRuntime } from './runtime/watcher.ts'
+import { InstallWatcher, locateProfileFromModule } from './runtime/installer.ts'
 import type { ScanDeps, ScanOutcome } from './command.ts'
 import { registerScanCommand } from './command.ts'
 import { registerScanTool } from './tool.ts'
 import { registerPanel } from './web/panel.ts'
+import type { InstallScanEntry } from './runtime/installer.ts'
+
+declare module '@deepseek-ai/cordis' {
+  interface Events {
+    /**
+     * A freshly installed plugin was auto-scanned by the install hook.
+     * @mode emit
+     * @param entry - the package name and its static scan report.
+     */
+    'guard/install-scan'(entry: InstallScanEntry): void
+  }
+}
 
 /** Cordis plugin name used by loader diagnostics. */
 export const name = 'scan-guard'
@@ -57,6 +70,10 @@ export const Config = z.object({
   eventBuffer: z.number().min(10).max(100_000).default(500),
   denyDangerousToolCalls: z.boolean().default(true),
   webPanel: z.boolean().default(true),
+  installHook: z.object({
+    enabled: z.boolean().default(true),
+    intervalMs: z.number().min(2000).max(3_600_000).default(5000),
+  }).default({ enabled: true, intervalMs: 5000 }),
 }) as unknown as z<Config>
 
 /**
@@ -103,6 +120,24 @@ export function apply(ctx: Context, config: Config): void {
 
   let lastScan: ScanReport | undefined
   const scanOptions: ScanOptions = { config: cfg, rules, phraseRules, urlRules, allowlist }
+
+  // Auto-scan freshly installed plugins: watch the profile manifest (the only
+  // reliable install-complete signal the host exposes) and scan each new
+  // package. Best-effort: no profile location (dev checkout) → disabled.
+  let installWatcher: InstallWatcher | undefined
+  const locatedProfile = cfg.installHook.enabled ? locateProfileFromModule(import.meta.url) : undefined
+  if (locatedProfile !== undefined) {
+    installWatcher = new InstallWatcher(locatedProfile.profileDir, cfg.installHook.intervalMs, scanOptions, (entry) => {
+      const severity: ScanSeverity = entry.report.verdict === 'block' ? 'block' : 'warn'
+      runtime.record('install', severity, `auto-scan installed package ${entry.package}: ${entry.report.verdict} (${entry.report.summary.block} block, ${entry.report.summary.warn} warn)`)
+      ctx.emit('guard/install-scan', entry)
+      try {
+        appendFileSync(join(locatedProfile.profileDir, 'guard-install-scans.jsonl'), JSON.stringify(entry) + '\n')
+      } catch {
+        // non-fatal: persistence is best-effort
+      }
+    })
+  }
 
   const deps: ScanDeps = {
     runScan(target: string): ScanOutcome {
@@ -165,6 +200,7 @@ export function apply(ctx: Context, config: Config): void {
   }
 
   ctx.effect(() => {
+    installWatcher?.start()
     wire()
     ctx.on('internal/service', (serviceName: string, value: unknown) => {
       if (value !== undefined && (serviceName === 'tools' || serviceName === 'commands' || serviceName === 'webServer')) {
@@ -172,6 +208,7 @@ export function apply(ctx: Context, config: Config): void {
       }
     })
     return () => {
+      installWatcher?.stop()
       disposeRuntime()
       for (const teardown of teardowns) teardown()
     }

@@ -29,6 +29,7 @@ export function testConfig(overrides: Partial<GuardConfig> = {}): GuardConfig {
     eventBuffer: 500,
     denyDangerousToolCalls: true,
     webPanel: true,
+    installHook: { enabled: false, intervalMs: 5000 },
     ...overrides,
   }
 }
