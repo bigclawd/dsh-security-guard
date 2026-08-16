@@ -1,5 +1,7 @@
 # dsh-guard
 
+**English** | [中文](README.zh.md)
+
 A security guard plugin for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (`dsh`).
 It protects the harness host from untrusted plugins, workspaces and agent prompts in three layers:
 
