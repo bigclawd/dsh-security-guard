@@ -51,6 +51,9 @@
     "prepack": "node scripts/copy-rules.mjs"
   },
   "license": "MIT",
+  "dependencies": {
+    "typescript": "^6.0.3"
+  },
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.0",
     "@deepseek-ai/dsh-agent": "^0.1.0-rc.6",
@@ -74,7 +77,6 @@
     "@deepseek-ai/dsh-tools": "^0.1.0-rc.6",
     "@deepseek-ai/schemastery": "^3.18.1",
     "@types/node": "^24.0.0",
-    "typescript": "^6.0.3",
     "vitest": "^4.0.0"
   }
 }
