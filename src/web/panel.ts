@@ -1,5 +1,5 @@
 /**
- * The dsh-guard web panel: a zero-dependency status page and JSON endpoint
+ * The dsh-security-guard web panel: a zero-dependency status page and JSON endpoint
  * served through the host's webServer service (when present).
  *
  * Routes (all exact):
@@ -7,7 +7,7 @@
  * - `GET  /scan/panel`    — the self-contained HTML panel.
  * - `POST /scan/trust`    — body `{ "name": string }` whitelists a plugin.
  * - `POST /scan/untrust`  — body `{ "name": string }` un-whitelists a plugin.
- * @module dsh-guard/panel
+ * @module dsh-security-guard/panel
  */
 
 import type { IncomingMessage, ServerResponse } from 'node:http'
@@ -64,7 +64,7 @@ function panelHtml(): string {
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>dsh-guard</title>
+<title>dsh-security-guard</title>
 <style>
   body { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: #0f1117; color: #d7dae0; margin: 0; padding: 2rem; }
   h1 { font-size: 1.4rem; } h2 { font-size: 1.05rem; margin-top: 2rem; color: #9aa4b2; }
@@ -79,7 +79,7 @@ function panelHtml(): string {
 </style>
 </head>
 <body>
-<h1>dsh-guard</h1>
+<h1>dsh-security-guard</h1>
 <div class="muted" id="meta"></div>
 <h2>Last scan</h2>
 <pre id="report">(no scan yet)</pre>

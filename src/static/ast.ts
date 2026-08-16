@@ -5,7 +5,7 @@
  * API and inspected with read-only AST/scanner passes. The scanner never
  * imports, requires, evaluates, or executes any part of the scanned code —
  * `ts.createSourceFile` is pure parsing.
- * @module dsh-guard/ast
+ * @module dsh-security-guard/ast
  */
 
 import ts from 'typescript'

@@ -47,7 +47,7 @@ export function testScanOptions(config: GuardConfig): ScanOptions {
 
 /** Write a file into a fresh temp directory; returns the directory path. */
 export function writeTempFiles(files: Record<string, string>): string {
-  const dir = mkdtempSync(join(tmpdir(), 'dsh-guard-test-'))
+  const dir = mkdtempSync(join(tmpdir(), 'dsh-security-guard-test-'))
   for (const [name, content] of Object.entries(files)) {
     const path = join(dir, name)
     mkdirSync(dirname(path), { recursive: true })

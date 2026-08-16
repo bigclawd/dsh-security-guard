@@ -1,5 +1,5 @@
 /**
- * dsh-guard: a security scanner plugin for the DeepSeek Harness (dsh).
+ * dsh-security-guard: a security scanner plugin for the DeepSeek Harness (dsh).
  *
  * - Static scan at install/load time (`/scan`, `plugin_scan`, web panel):
  *   malicious code (eval/child_process/network exfiltration), prompt- and
@@ -14,7 +14,7 @@
  * The scanner is non-executing by design: scanned plugin code is parsed with
  * the TypeScript compiler API and examined with read-only passes — never
  * imported, required, or evaluated.
- * @module dsh-guard
+ * @module dsh-security-guard
  */
 
 import type { Context } from '@deepseek-ai/cordis'

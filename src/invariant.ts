@@ -1,8 +1,8 @@
 /**
- * Package-owned invariant companion for `dsh-guard`. The bundled
+ * Package-owned invariant companion for `dsh-security-guard`. The bundled
  * rule files are package configuration: the invariant verifies they parse and
  * expose the core detectors so a malformed release fails loudly in CI.
- * @module dsh-guard/invariant
+ * @module dsh-security-guard/invariant
  */
 
 /* jscpd:ignore-start */
@@ -10,7 +10,7 @@ import type { Context } from '@deepseek-ai/cordis'
 import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
 import { loadBundledAllowlist, loadBundledRules } from './rules.ts'
 
-const PACKAGE_NAME = 'dsh-guard'
+const PACKAGE_NAME = 'dsh-security-guard'
 
 /** Cordis companion plugin name. */
 export const name = 'guard-invariant'
@@ -25,11 +25,11 @@ const install: InvariantInstaller = () => {
   const rules = loadBundledRules()
   const ids = new Set(rules.map(rule => rule.id))
   for (const required of ['code.eval', 'injection.directive', 'injection.directive-zh', 'token.repetition']) {
-    if (!ids.has(required)) throw new Error(`dsh-guard invariant: bundled rules are missing "${required}"`)
+    if (!ids.has(required)) throw new Error(`dsh-security-guard invariant: bundled rules are missing "${required}"`)
   }
-  if (rules.length !== ids.size) throw new Error('dsh-guard invariant: bundled rule ids are not unique')
+  if (rules.length !== ids.size) throw new Error('dsh-security-guard invariant: bundled rule ids are not unique')
   const domains = loadBundledAllowlist()
-  if (!domains.includes('api.deepseek.com')) throw new Error('dsh-guard invariant: allowlist is missing api.deepseek.com')
+  if (!domains.includes('api.deepseek.com')) throw new Error('dsh-security-guard invariant: allowlist is missing api.deepseek.com')
 }
 
 /**

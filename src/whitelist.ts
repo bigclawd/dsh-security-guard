@@ -1,7 +1,7 @@
 /**
  * Plugin whitelist: administrators mark trusted plugins so `/scan` and the
  * web panel skip them. Persisted to a JSON file when `guard.stateFile` is set.
- * @module dsh-guard/whitelist
+ * @module dsh-security-guard/whitelist
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
@@ -72,7 +72,7 @@ export class Whitelist {
       writeFileSync(path, `${JSON.stringify(payload, null, 2)}\n`, 'utf8')
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error)
-      console.error(`[dsh-guard] failed to persist state to ${path}: ${message}`)
+      console.error(`[dsh-security-guard] failed to persist state to ${path}: ${message}`)
     }
   }
 }

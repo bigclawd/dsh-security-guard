@@ -1,5 +1,5 @@
 {
-  "name": "dsh-guard",
+  "name": "dsh-security-guard",
   "description": "Static and runtime security guard for the DeepSeek Harness: scans plugins and workspaces for malicious code, context injection and token waste (block/warn/clean), intercepts dangerous runtime tool calls and prompt steps, and exposes /scan, plugin_scan, the scan web panel and a user-managed allowlist. Fully static analysis — never executes scanned code.",
   "version": "0.1.0-rc.5",
   "publishConfig": {
@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bigclawd/dsh-guard.git"
+    "url": "https://github.com/bigclawd/dsh-security-guard.git"
   },
   "type": "module",
   "dsh": {

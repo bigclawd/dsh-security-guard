@@ -2,7 +2,7 @@
  * Runtime threat detection on live text: prompt-injection phrases in the
  * context the model is about to see and in tool results, plus URL
  * classification of tool-call arguments. Pure text analysis — no execution.
- * @module dsh-guard/detector
+ * @module dsh-security-guard/detector
  */
 
 import type { ResolvedRule } from '../rules.ts'

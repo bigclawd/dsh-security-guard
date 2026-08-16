@@ -2,7 +2,7 @@
  * Phrase matching, shared by the static content analysis and the runtime
  * injection detector. Case handling: rules either match case-insensitively
  * (lowercased haystack/needles) or verbatim.
- * @module dsh-guard/phrase
+ * @module dsh-security-guard/phrase
  */
 
 import type { ResolvedRule, RuleMatcher } from './rules.ts'

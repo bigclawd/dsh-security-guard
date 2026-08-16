@@ -4,7 +4,7 @@
  *
  * Safety contract: only file reading, size probing, and pure parsing/AST
  * passes happen here. Scanned plugin code is never imported or executed.
- * @module dsh-guard/scanner
+ * @module dsh-security-guard/scanner
  */
 
 import { readdirSync, readFileSync, statSync } from 'node:fs'

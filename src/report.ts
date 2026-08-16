@@ -1,6 +1,6 @@
 /**
  * Human-readable rendering of scan reports, plus the JSON projection.
- * @module dsh-guard/report
+ * @module dsh-security-guard/report
  */
 
 import type { ScanFinding, ScanReport, ScanVerdict } from './types.ts'
@@ -21,7 +21,7 @@ export function renderFinding(finding: ScanFinding): string {
 /** Render the complete human-readable report. */
 export function renderReport(report: ScanReport): string {
   const lines: string[] = []
-  lines.push(`dsh-guard scan: ${report.target}`)
+  lines.push(`dsh-security-guard scan: ${report.target}`)
   lines.push(`verdict: ${VERDICT_LABEL[report.verdict]} (${report.summary.block} block, ${report.summary.warn} warn)`)
   lines.push(`scanned ${report.filesScanned} files (${report.filesSkipped} skipped), ${report.bytesRead} bytes, ${report.ruleIds.length} rules`)
   lines.push('')

@@ -1,7 +1,7 @@
 /**
  * The `plugin_scan` model-facing tool: lets the agent itself request a static
  * scan of a plugin before loading or trusting it.
- * @module dsh-guard/tool
+ * @module dsh-security-guard/tool
  */
 
 import { defineTool } from '@deepseek-ai/dsh-tools'

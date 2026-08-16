@@ -4,7 +4,7 @@
  * live in `src/rules/*.json`, and an operator can point `guard.rulesDir` at a
  * directory of extra rule files (each `*.json` with a `{ "rules": [...] }`
  * root, merged over the bundled set by `id`).
- * @module dsh-guard/rules
+ * @module dsh-security-guard/rules
  */
 
 import { readFileSync, readdirSync, statSync } from 'node:fs'

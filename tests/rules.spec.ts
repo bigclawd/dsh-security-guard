@@ -72,7 +72,7 @@ describe('loadBundledRules', () => {
 
 describe('loadRulesDir + mergeRules', () => {
   it('loads JSON rule files from a directory and merges by id (later wins)', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'dsh-guard-rules-'))
+    const dir = mkdtempSync(join(tmpdir(), 'dsh-security-guard-rules-'))
     writeFileSync(join(dir, 'extra.json'), JSON.stringify({
       rules: [{ id: 'code.eval', category: 'code', severity: 'warn', description: 'overridden', kind: 'ast-call', pattern: { callee: ['eval'] } }],
     }))
@@ -84,7 +84,7 @@ describe('loadRulesDir + mergeRules', () => {
   })
 
   it('surfaces a malformed rule file as GuardRuleError', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'dsh-guard-rules-'))
+    const dir = mkdtempSync(join(tmpdir(), 'dsh-security-guard-rules-'))
     writeFileSync(join(dir, 'bad.json'), '{"rules": [{"id": 1}]}')
     expect(() => loadRulesDir(dir)).toThrow(GuardRuleError)
   })

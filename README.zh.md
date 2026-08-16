@@ -1,4 +1,4 @@
-# 🛡️ dsh-guard
+# 🛡️ dsh-security-guard
 
 [English](README.md) | **中文**
 
@@ -69,14 +69,14 @@ hex/base64 的 `Buffer.from`/`toString` 编码、长 hex 纯字符串载荷、
 ### 安装
 
 ```bash
-dsh plugin --profile default add dsh-guard
+dsh plugin --profile default add dsh-security-guard
 ```
 
 ### 宿主应用
 
 ```ts
 import { Context } from '@deepseek-ai/cordis'
-import Guard from 'dsh-guard'
+import Guard from 'dsh-security-guard'
 
 ctx.plugin(Guard, {
   rulesDir: 'config/guard-rules',          // 可选覆盖

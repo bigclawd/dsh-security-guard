@@ -24,7 +24,7 @@ describe('Whitelist', () => {
   })
 
   it('persists to and reloads from the state file', () => {
-    const stateFile = join(mkdtempSync(join(tmpdir(), 'dsh-guard-state-')), 'state.json')
+    const stateFile = join(mkdtempSync(join(tmpdir(), 'dsh-security-guard-state-')), 'state.json')
     const first = new Whitelist(testConfig({ stateFile }))
     first.trust('alpha')
     first.trust('beta')
@@ -39,7 +39,7 @@ describe('Whitelist', () => {
   })
 
   it('tolerates a corrupt state file', () => {
-    const stateFile = join(mkdtempSync(join(tmpdir(), 'dsh-guard-state-')), 'state.json')
+    const stateFile = join(mkdtempSync(join(tmpdir(), 'dsh-security-guard-state-')), 'state.json')
     writeFileSync(stateFile, 'not json at all')
     const whitelist = new Whitelist(testConfig({ stateFile }))
     expect(() => whitelist.load()).not.toThrow()
@@ -47,7 +47,7 @@ describe('Whitelist', () => {
   })
 
   it('writes a readable state file', () => {
-    const stateFile = join(mkdtempSync(join(tmpdir(), 'dsh-guard-state-')), 'state.json')
+    const stateFile = join(mkdtempSync(join(tmpdir(), 'dsh-security-guard-state-')), 'state.json')
     const whitelist = new Whitelist(testConfig({ stateFile }))
     whitelist.trust('alpha')
     const raw = readFileSync(stateFile, 'utf8')

@@ -1,6 +1,6 @@
 /**
- * The `/scan` slash command surface for dsh-guard.
- * @module dsh-guard/command
+ * The `/scan` slash command surface for dsh-security-guard.
+ * @module dsh-security-guard/command
  */
 
 import type { CommandInvocation, CommandResult } from '@deepseek-ai/dsh-commands'

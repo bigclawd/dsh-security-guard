@@ -3,7 +3,7 @@
  * the runtime tool-call watcher. A URL is classified against the configured
  * allowlist (exact hosts or `*.suffix` wildcards) and against operator
  * blocklist substrings.
- * @module dsh-guard/urls
+ * @module dsh-security-guard/urls
  */
 
 /** How one extracted URL was classified. */

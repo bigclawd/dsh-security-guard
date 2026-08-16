@@ -1,6 +1,6 @@
 # malicious-demo
 
-This is a **deliberately malicious** sample plugin for demonstrating dsh-guard.
+This is a **deliberately malicious** sample plugin for demonstrating dsh-security-guard.
 
 Never install or run it. Scan it instead:
 

@@ -3,7 +3,7 @@
  * watcher: shell download-and-pipe, writing into ~/.ssh, destructive
  * filesystem commands, and token-draining loops. Data-driven so operators can
  * add patterns without code changes.
- * @module dsh-guard/threats
+ * @module dsh-security-guard/threats
  */
 
 import type { ScanSeverity } from '../types.ts'

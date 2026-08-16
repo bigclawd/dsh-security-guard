@@ -1,4 +1,4 @@
-# 🛡️ dsh-guard
+# 🛡️ dsh-security-guard
 
 **English** | [中文](README.zh.md)
 
@@ -72,14 +72,14 @@ encodings, long hex-only string payloads, and computed member access on
 ### Install
 
 ```bash
-dsh plugin --profile default add dsh-guard
+dsh plugin --profile default add dsh-security-guard
 ```
 
 ### Host application
 
 ```ts
 import { Context } from '@deepseek-ai/cordis'
-import Guard from 'dsh-guard'
+import Guard from 'dsh-security-guard'
 
 ctx.plugin(Guard, {
   rulesDir: 'config/guard-rules',          // optional overrides

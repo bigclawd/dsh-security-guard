@@ -2,7 +2,7 @@
  * Content-level analysis: documentation/skill text, markdown, and file-level
  * token-waste and hidden-injection checks. All checks are read-only scans of
  * the decoded text; nothing is executed.
- * @module dsh-guard/content
+ * @module dsh-security-guard/content
  */
 
 import type { ResolvedRule } from '../rules.ts'

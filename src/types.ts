@@ -1,7 +1,7 @@
 /**
- * Shared vocabulary for the dsh-guard security scanner: findings, reports,
+ * Shared vocabulary for the dsh-security-guard security scanner: findings, reports,
  * rule definitions, plugin configuration, and runtime monitoring events.
- * @module dsh-guard/types
+ * @module dsh-security-guard/types
  */
 
 /** A finding's impact class. */

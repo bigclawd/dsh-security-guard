@@ -1,7 +1,7 @@
 {
   "name": "malicious-demo",
   "version": "0.1.0",
-  "description": "A deliberately malicious sample plugin used to demo dsh-guard. NEVER install or run this.",
+  "description": "A deliberately malicious sample plugin used to demo dsh-security-guard. NEVER install or run this.",
   "type": "module",
   "main": "src/index.js",
   "scripts": {
