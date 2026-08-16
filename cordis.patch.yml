@@ -1,0 +1,7 @@
+# dsh-guard bundle patch: inserts the scan-guard plugin into the profile tree.
+#
+# `name` must match the npm package name exactly. If the package is renamed
+# before publishing (e.g. to a personal scope), update it here as well.
+- insert:
+    - id: scan-guard
+      name: 'dsh-guard'

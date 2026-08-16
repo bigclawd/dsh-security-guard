@@ -1,0 +1,132 @@
+{
+  "rules": [
+    {
+      "id": "code.eval",
+      "category": "code",
+      "severity": "block",
+      "description": "eval() executes arbitrary strings as code; a plugin can hide anything inside an encoded payload.",
+      "kind": "ast-call",
+      "pattern": { "callee": ["eval"] }
+    },
+    {
+      "id": "code.function-constructor",
+      "category": "code",
+      "severity": "block",
+      "description": "new Function() / Function() compiles a string into executable code at runtime.",
+      "kind": "ast-call",
+      "pattern": { "callee": ["Function"] }
+    },
+    {
+      "id": "code.dynamic-import",
+      "category": "code",
+      "severity": "warn",
+      "description": "Dynamic import() lets a plugin load code at runtime, bypassing the static review of its dependencies.",
+      "kind": "ast-call",
+      "pattern": { "callee": ["import"] }
+    },
+    {
+      "id": "code.child-process",
+      "category": "code",
+      "severity": "block",
+      "description": "child_process shell/spawn APIs execute operating-system commands.",
+      "kind": "ast-call",
+      "pattern": {
+        "object": ["child_process", "cp", "execa"],
+        "property": ["exec", "execFile", "spawn", "fork", "execSync", "execFileSync", "spawnSync"]
+      }
+    },
+    {
+      "id": "code.child-process-module",
+      "category": "code",
+      "severity": "block",
+      "description": "Importing the child_process module at all is a strong signal of shell execution.",
+      "kind": "ast-call",
+      "pattern": { "module": ["node:child_process", "child_process"] }
+    },
+    {
+      "id": "code.env-access",
+      "category": "code",
+      "severity": "warn",
+      "description": "Reading process.env may harvest API keys and other secrets from the host environment.",
+      "kind": "ast-member",
+      "pattern": { "object": ["process"], "property": ["env"] }
+    },
+    {
+      "id": "code.homedir",
+      "category": "code",
+      "severity": "warn",
+      "description": "os.homedir() resolves the user's home directory, often as the first step toward reading ~/.ssh or ~/.config.",
+      "kind": "ast-member",
+      "pattern": { "object": ["os"], "property": ["homedir"] }
+    },
+    {
+      "id": "code.sensitive-path",
+      "category": "code",
+      "severity": "warn",
+      "description": "A string literal references a sensitive user path such as ~/.ssh, ~/.aws, ~/.gnupg, or ~/.kube.",
+      "kind": "regex",
+      "regex": "(~\\/|\\.ssh[\\/\\\\]|\\.aws[\\/\\\\]|\\.gnupg[\\/\\\\]|\\.kube[\\/\\\\])",
+      "flags": "i",
+      "scope": "string"
+    },
+    {
+      "id": "code.fs-write",
+      "category": "code",
+      "severity": "warn",
+      "description": "Filesystem write API; confirm the target stays inside the plugin workspace.",
+      "kind": "ast-call",
+      "pattern": {
+        "object": ["fs", "fsp", "node:fs", "node:fs/promises"],
+        "property": ["writeFile", "writeFileSync", "appendFile", "appendFileSync", "createWriteStream", "rename", "renameSync", "copyFile", "copyFileSync", "mkdir", "mkdirSync", "symlink", "symlinkSync"]
+      }
+    },
+    {
+      "id": "code.fs-destructive",
+      "category": "code",
+      "severity": "warn",
+      "description": "Destructive filesystem API; deleting or unlinking paths outside the workspace is dangerous.",
+      "kind": "ast-call",
+      "pattern": {
+        "object": ["fs", "fsp", "node:fs", "node:fs/promises"],
+        "property": ["rm", "rmSync", "unlink", "unlinkSync", "rmdir", "rmdirSync"]
+      }
+    },
+    {
+      "id": "code.obfuscation",
+      "category": "code",
+      "severity": "warn",
+      "description": "String-encoding primitives (base64, char codes) are frequently used to hide payloads from reviewers.",
+      "kind": "regex",
+      "regex": "(fromCharCode|atob\\(|btoa\\(|\\bBuffer\\.from\\([^)]*,\\s*['\"]base64['\"]|\\.toString\\(['\"]base64['\"]\\))",
+      "flags": "i",
+      "scope": "string"
+    },
+    {
+      "id": "code.network-unknown-host",
+      "category": "code",
+      "severity": "warn",
+      "description": "A network request targets a host outside the configured allowlist; data exfiltration risk.",
+      "kind": "url",
+      "match": "unknown-host"
+    },
+    {
+      "id": "code.network-blocked",
+      "category": "code",
+      "severity": "block",
+      "description": "A network request target matches a configured blocked URL pattern.",
+      "kind": "url",
+      "match": "blocked-pattern"
+    },
+    {
+      "id": "code.install-script",
+      "category": "code",
+      "severity": "block",
+      "description": "The plugin package declares an install-time script, which runs with the full privileges of the installing user.",
+      "kind": "regex",
+      "regex": "\"(preinstall|postinstall|preuninstall|postuninstall)\"\\s*:",
+      "flags": "i",
+      "scope": "all",
+      "files": ["package.json"]
+    }
+  ]
+}
