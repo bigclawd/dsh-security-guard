@@ -8,7 +8,7 @@
 ![Static Analysis](https://img.shields.io/badge/analysis-static-6a9fb5)
 ![Runtime](https://img.shields.io/badge/runtime-intercept-8b5cf6)
 ![Language](https://img.shields.io/badge/TypeScript-6.x-3178c6)
-![Tests](https://img.shields.io/badge/tests-82%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-89%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![dsh](https://img.shields.io/badge/dsh-0.1.0--rc.5-4c6ef5)
 
@@ -55,6 +55,14 @@
 ```json
 { "id": "code.eval", "kind": "ast-call", "severity": "block", "callee": ["eval"] }
 ```
+
+matcher 种类：`ast-call`（调用/`new`）、`ast-member`（点访问）、
+`ast-computed`（对全局对象的计算成员访问——混淆信号）、
+`ast-import`（导入/require）、`regex`（作用于 `all`/`string`/`comment`）、
+`phrase`、`url`、`file`。除经典恶意模式外，内置规则还针对混淆做了加固：
+hex/base64 的 `Buffer.from`/`toString` 编码、长 hex 纯字符串载荷、
+对 `globalThis`/`global`/`process` 的计算成员访问都会被标记。
+完整 schema 见 `src/rules.ts`。
 
 ## 🚀 用法
 
@@ -110,7 +118,7 @@ ctx.plugin(Guard, {
 ```bash
 pnpm install
 pnpm typecheck   # tsc --noEmit
-pnpm test        # vitest run（82 个测试：static、rules、runtime、whitelist、plugin）
+pnpm test        # vitest run（89 个测试：static、rules、runtime、whitelist、plugin）
 pnpm build       # tsc 输出 + 将打包规则复制到 lib/
 ```
 
@@ -125,6 +133,17 @@ pnpm build       # tsc 输出 + 将打包规则复制到 lib/
 - 不使用未经审查的 AI 签名或哈希机制；判定来自可审计、可按 id 覆盖的 JSON 规则。
 - 运行时闸门决策使用宿主原生的 `PreToolDecision` / `PostToolDecision` /
   `PreStepDecision` 契约。
+
+## ⚠️ 已知边界
+
+- **混淆是一场军备竞赛。** 规则模式能可靠拦截脚本小子级恶意代码、复制粘贴的
+  样本，以及最重要的——`package.json` 里的安装时生命周期脚本（无法隐藏：
+  npm 要求字面量键名）。但铁了心的攻击者仍可通过运行时解码或加密隐藏载荷。
+  扫描器是风险降低层，不是安全证明。
+- **存在误报。** 合法代码也可能触发启发式规则（例如 hex 哈希常量）；
+  判定默认 `warn`，白名单和 `ruleSeverity` 覆盖可以兜底。
+- **先扫后装。** 恶意 `postinstall` 在包安装的那一刻就会执行——先扫描
+  （`/scan`），再 `dsh plugin add`。
 
 ## 📄 License / 许可证
 

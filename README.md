@@ -8,7 +8,7 @@
 ![Static Analysis](https://img.shields.io/badge/analysis-static-6a9fb5)
 ![Runtime](https://img.shields.io/badge/runtime-intercept-8b5cf6)
 ![Language](https://img.shields.io/badge/TypeScript-6.x-3178c6)
-![Tests](https://img.shields.io/badge/tests-82%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-89%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![dsh](https://img.shields.io/badge/dsh-0.1.0--rc.5-4c6ef5)
 
@@ -57,6 +57,15 @@ id. The full schema lives in `src/rules.ts`.
 ```json
 { "id": "code.eval", "kind": "ast-call", "severity": "block", "callee": ["eval"] }
 ```
+
+Matcher kinds: `ast-call` (calls/`new`), `ast-member` (dotted access),
+`ast-computed` (computed access on globals — obfuscation signal),
+`ast-import` (imports/requires), `regex` (scoped to `all`/`string`/`comment`),
+`phrase`, `url`, `file`. Beyond the classic malicious patterns, the bundled
+rules harden against obfuscation: hex/base64 `Buffer.from`/`toString`
+encodings, long hex-only string payloads, and computed member access on
+`globalThis`/`global`/`process` are all flagged. The full schema lives in
+`src/rules.ts`.
 
 ## 🚀 Usage
 
@@ -112,7 +121,7 @@ live findings, rule overview, allowlist management (trust / untrust), report dow
 ```bash
 pnpm install
 pnpm typecheck   # tsc --noEmit
-pnpm test        # vitest run (82 tests: static, rules, runtime, whitelist, plugin)
+pnpm test        # vitest run (89 tests: static, rules, runtime, whitelist, plugin)
 pnpm build       # tsc emit + copy bundled rules into lib/
 ```
 
@@ -129,6 +138,19 @@ deliberately malicious sample plugin that the scanner **never executes**
   id-overridable JSON rules.
 - Runtime gate decisions use the host's native `PreToolDecision` /
   `PostToolDecision` / `PreStepDecision` contracts.
+
+## ⚠️ Known limits
+
+- **Obfuscation is an arms race.** Rule patterns reliably catch naive malware,
+  copy-paste samples, and — most importantly — install-time lifecycle scripts
+  in `package.json` (unhideable: npm requires the literal key). But a
+  determined attacker can still hide payloads behind runtime decoding or
+  encryption. The scanner is a risk-reduction layer, not a security proof.
+- **False positives exist.** Legitimate code can trip heuristic rules (e.g. a
+  hex hash constant); verdicts default to `warn`, and the allowlist and
+  `ruleSeverity` overrides handle the rest.
+- **Scan before install.** A malicious `postinstall` runs the moment the
+  package is installed — scan the package first (`/scan`), then `dsh plugin add`.
 
 ## 📄 License
 
