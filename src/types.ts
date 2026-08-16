@@ -90,6 +90,9 @@ export type MatchScope = 'all' | 'string' | 'comment'
  *   - `module` — require()/import() of a module whose specifier equals one of
  *     these string literals.
  * - `ast-member` matches property access: `process.env`, `os.homedir()`.
+ * - `ast-computed` matches computed member access on a named object:
+ *   `globalThis['en'+'v']`, `process['env']` — indirection on globals is an
+ *   obfuscation signal.
  * - `ast-import` matches static import/export-from declarations whose module
  *   specifier equals one of the strings.
  */
@@ -103,6 +106,10 @@ export interface AstCallRulePattern {
 export interface AstMemberRulePattern {
   readonly object: string[]
   readonly property: string[]
+}
+
+export interface AstComputedRulePattern {
+  readonly object: string[]
 }
 
 export interface AstImportRulePattern {
@@ -126,6 +133,14 @@ export type RuleDefinition =
     readonly description: string
     readonly kind: 'ast-member'
     readonly pattern: AstMemberRulePattern
+  }
+  | {
+    readonly id: string
+    readonly category: ScanCategory
+    readonly severity: ScanSeverity
+    readonly description: string
+    readonly kind: 'ast-computed'
+    readonly pattern: AstComputedRulePattern
   }
   | {
     readonly id: string

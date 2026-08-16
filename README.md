@@ -28,7 +28,7 @@
 
 | Class | Examples | Default severity |
 | --- | --- | --- |
-| 🧨 **Malicious code** | `eval` / `new Function`, `child_process`, `require("node:...")`, `postinstall` hooks, `process.env` exfiltration, hidden base64 payloads | `block` |
+| 🧨 **Malicious code** | `eval` / `new Function`, `child_process`, `require("node:...")`, `postinstall` hooks, `process.env` exfiltration, hidden base64/hex payloads, computed access on globals | `block` |
 | 💉 **Context injection** | "ignore previous instructions" / `忽略之前的指令` prompt-override phrases, unvetted URL hosts | `block` / `warn` |
 | ⏳ **Token waste** | oversized files, base64-dominant blobs, repeated words/characters, filler comments | `warn` |
 | 🔐 **Sensitive paths** | `~/.ssh`, `.env`, credential stores touched by code | `warn` |
@@ -37,7 +37,7 @@
 
 - **AST pass** (`src/static/ast.ts`) — parses TS/JS with the TypeScript compiler
   API (`ts.createSourceFile`), walks the tree, matches rule patterns
-  (`ast-call`, `ast-member`, `ast-import`). Text is never executed.
+  (`ast-call`, `ast-member`, `ast-computed`, `ast-import`). Text is never executed.
 - **Content pass** (`src/static/content.ts`) — regex / phrase / url / file rules
   over text, code strings, image alt attributes and markdown.
 - **Token pass** — size, base64 ratio, repetition and comment-padding heuristics

@@ -118,7 +118,7 @@ export function analyzeSource(
 
   for (const resolved of resolvedRules) {
     const matcher = resolved.matcher
-    if (matcher.kind !== 'ast-call' && matcher.kind !== 'ast-member' && matcher.kind !== 'ast-import') continue
+    if (matcher.kind !== 'ast-call' && matcher.kind !== 'ast-member' && matcher.kind !== 'ast-computed' && matcher.kind !== 'ast-import') continue
     visit(sf, (node) => {
       if (matcher.kind === 'ast-call' && (ts.isCallExpression(node) || ts.isNewExpression(node))) {
         const required = requireSpecifier(node)
@@ -136,6 +136,10 @@ export function analyzeSource(
         }
       } else if (matcher.kind === 'ast-member' && ts.isPropertyAccessExpression(node)) {
         if (ts.isIdentifier(node.expression) && matcher.object.has(node.expression.text) && matcher.property.has(node.name.text)) {
+          findings.push(findingAt(file, sf, node, resolved, `${resolved.rule.description} (${excerptOf(node.getText(sf))})`))
+        }
+      } else if (matcher.kind === 'ast-computed' && ts.isElementAccessExpression(node)) {
+        if (ts.isIdentifier(node.expression) && matcher.object.has(node.expression.text)) {
           findings.push(findingAt(file, sf, node, resolved, `${resolved.rule.description} (${excerptOf(node.getText(sf))})`))
         }
       } else if (matcher.kind === 'ast-import') {

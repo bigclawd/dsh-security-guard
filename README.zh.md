@@ -28,7 +28,7 @@
 
 | 类别 | 示例 | 默认严重级别 |
 | --- | --- | --- |
-| 🧨 **恶意代码** | `eval` / `new Function`、`child_process`、`require("node:...")`、`postinstall` 钩子、`process.env` 数据外泄、隐藏 base64 载荷 | `block` |
+| 🧨 **恶意代码** | `eval` / `new Function`、`child_process`、`require("node:...")`、`postinstall` 钩子、`process.env` 数据外泄、隐藏 base64/hex 载荷、对全局对象的计算成员访问 | `block` |
 | 💉 **上下文注入** | “忽略之前的指令”等提示词覆盖短语、未经验证的 URL 主机 | `block` / `warn` |
 | ⏳ **令牌浪费** | 超大文件、base64 占主体的内容、重复单词/字符、填充性注释 | `warn` |
 | 🔐 **敏感路径** | 代码触及 `~/.ssh`、`.env`、凭据存储 | `warn` |
@@ -36,7 +36,7 @@
 ## 🔍 检测器家族
 
 - **AST 传递**（`src/static/ast.ts`）— 用 TypeScript 编译器 API（`ts.createSourceFile`）
-  解析 TS/JS，遍历语法树并匹配规则模式（`ast-call`、`ast-member`、`ast-import`）。
+  解析 TS/JS，遍历语法树并匹配规则模式（`ast-call`、`ast-member`、`ast-computed`、`ast-import`）。
   文本从不被执行。
 - **内容传递**（`src/static/content.ts`）— 对文本、代码字符串、图片 alt 属性和
   markdown 运行 regex / phrase / url / file 规则。

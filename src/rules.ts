@@ -43,7 +43,7 @@ function bundledPath(name: string): string {
 
 const CATEGORIES: ScanCategory[] = ['code', 'injection', 'token']
 const SEVERITIES: ScanSeverity[] = ['block', 'warn']
-const KINDS = ['ast-call', 'ast-member', 'ast-import', 'regex', 'phrase', 'url', 'file'] as const
+const KINDS = ['ast-call', 'ast-member', 'ast-computed', 'ast-import', 'regex', 'phrase', 'url', 'file'] as const
 const FILE_CHECKS = ['oversize', 'repetition', 'base64-ratio', 'zero-width', 'base64-hidden', 'comment-padding'] as const
 
 function isStringArray(value: unknown): value is string[] {
@@ -120,6 +120,16 @@ export function validateRule(entry: unknown, where: string): RuleDefinition {
         throw new GuardRuleError(`rule "${id}" ast-member pattern needs non-empty object and property`, where)
       }
       return { ...base, kind: 'ast-member', pattern: { object, property } }
+    }
+    case 'ast-computed': {
+      if (!isRecord(entry.pattern)) {
+        throw new GuardRuleError(`rule "${id}" requires an ast-computed "pattern"`, where)
+      }
+      const object = expectStringArray(entry.pattern, id, where, 'object')
+      if (object.length === 0) {
+        throw new GuardRuleError(`rule "${id}" ast-computed pattern needs a non-empty object`, where)
+      }
+      return { ...base, kind: 'ast-computed', pattern: { object } }
     }
     case 'ast-import': {
       if (!isRecord(entry.pattern)) {
@@ -284,6 +294,7 @@ export type RuleMatcher =
     module: ReadonlySet<string>
   }
   | { kind: 'ast-member'; object: ReadonlySet<string>; property: ReadonlySet<string> }
+  | { kind: 'ast-computed'; object: ReadonlySet<string> }
   | { kind: 'ast-import'; specifier: ReadonlySet<string> }
   | { kind: 'regex'; regex: RegExp; scope: 'all' | 'string' | 'comment'; files: ReadonlySet<string> }
   | { kind: 'phrase'; phrases: string[]; lower: string[]; caseSensitive: boolean }
@@ -314,6 +325,9 @@ export function compileRules(
         break
       case 'ast-member':
         matcher = { kind: 'ast-member', object: new Set(rule.pattern.object), property: new Set(rule.pattern.property) }
+        break
+      case 'ast-computed':
+        matcher = { kind: 'ast-computed', object: new Set(rule.pattern.object) }
         break
       case 'ast-import':
         matcher = { kind: 'ast-import', specifier: new Set(rule.pattern.specifier) }

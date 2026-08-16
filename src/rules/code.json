@@ -102,6 +102,34 @@
       "scope": "string"
     },
     {
+      "id": "code.encoding-buffer",
+      "category": "code",
+      "severity": "warn",
+      "description": "Buffer.from / toString with a hex or base64 encoding argument is a payload-encoding primitive used to hide strings from reviewers.",
+      "kind": "regex",
+      "regex": "\\bBuffer\\.from\\([^)]*,\\s*['\"](?:hex|base64)['\"]\\s*\\)|\\.toString\\(['\"](?:hex|base64)['\"]\\)",
+      "flags": "i",
+      "scope": "all"
+    },
+    {
+      "id": "code.encoded-string",
+      "category": "code",
+      "severity": "warn",
+      "description": "A long hex-only string literal is likely an encoded payload hidden from reviewers.",
+      "kind": "regex",
+      "regex": "^[0-9a-f]{40,}$",
+      "flags": "i",
+      "scope": "string"
+    },
+    {
+      "id": "code.indirect-access",
+      "category": "code",
+      "severity": "warn",
+      "description": "Computed member access on a global object (globalThis/global/process) hides the accessed name from static review; a common obfuscation pattern.",
+      "kind": "ast-computed",
+      "pattern": { "object": ["globalThis", "global", "process"] }
+    },
+    {
       "id": "code.network-unknown-host",
       "category": "code",
       "severity": "warn",
